@@ -15,13 +15,6 @@ To install PakPak on your ComputerCraft computer, simply run the following comma
 ```lua
 pastebin get https://pastebin.com/tR10hAKd pakpak
 ```
-
-Alternatively, you can use the direct ComputerCraft Pastebin installation command:
-
-```lua
-pastebin run tR10hAKd
-```
-
 Now you have PakPak ready to go!
 
 ## Usage
