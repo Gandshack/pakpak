@@ -80,17 +80,10 @@ local function installPackage(appName, packageInfo)
     createDirectory(installPath)
     installDirectory(repo, path, installPath, files)
 
-    -- Corrected Shortcut Creation
-    local shortcutPath = "/" .. appName .. ".lua"  -- explicitly use .lua
-    local mainFile = fs.combine(installPath, files[1])  -- assuming first file is main
-    local shortcutFile = fs.open(shortcutPath, "w")
-    if shortcutFile then
-        shortcutFile.write('shell.run("' .. mainFile .. '")')
-        shortcutFile.close()
-        print("Shortcut created at: " .. shortcutPath)
-    else
-        print("Failed to create shortcut at " .. shortcutPath)
-    end
+    -- Create a shell alias for easier execution without .lua extension
+    local mainFile = installPath .. "/" .. files[1]
+    shell.setAlias(appName, mainFile)
+    print("Alias created: " .. appName .. " -> " .. mainFile)
 end
 
 local args = {...}
@@ -122,4 +115,3 @@ if not packageInfo.files then
 end
 
 installPackage(appName, packageInfo)
-
