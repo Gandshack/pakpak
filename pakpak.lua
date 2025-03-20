@@ -122,3 +122,4 @@ if not packageInfo.files then
 end
 
 installPackage(appName, packageInfo)
+
