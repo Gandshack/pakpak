@@ -47,13 +47,7 @@ We welcome contributions! You can:
 - ✅ Submit pull requests for improvements and new features.
 - 💡 Suggest new packages.
 - 🐞 Report issues or bugs.
-
----
-
-## License
-
-PakPak is licensed under the MIT License. See the `LICENSE` file for details.
-
+  
 ---
 
 Enjoy simplified ComputerCraft package management with PakPak! 🎉
