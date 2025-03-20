@@ -1,1 +1,35 @@
-this is a test
+PakPak - Simple Package Manager for ComputerCraft
+
+PakPak is a straightforward and easy-to-use package manager built specifically for ComputerCraft. It lets you quickly install apps, APIs, and scripts directly from a maintained repository with minimal setup.
+
+Features
+
+Easy Installation: Quickly install and manage ComputerCraft programs.
+
+Automatic Shortcuts: Instantly creates convenient shortcuts for your programs.
+
+Centralized Package List: Easily access a curated list of packages managed centrally.
+
+Installation
+
+To install PakPak on your ComputerCraft computer, simply run the following command:
+
+Alternatively, you can use the direct Computercraft pastebin installation command:
+
+Now you have PakPak ready to go!
+
+Usage
+
+Install packages directly using the following command:
+
+Replace [packageName] with the package you wish to install. Packages available are maintained and curated centrally.
+
+Requesting Packages
+
+To request new packages, please contact the repository maintainer or submit a request.
+
+Contributions
+
+Feel free to contribute by creating pull requests or suggesting new features.
+
+Enjoy simplified ComputerCraft app management with PakPak!
