@@ -68,39 +68,88 @@ local function installPackage(appName, packageInfo)
     local installPath = packageInfo.installPath
     local files = packageInfo.files
 
+    print("--------------------")
+    print("Installing package: " .. appName)
+
     if not files then
         print("No files listed for package: " .. appName)
         return
     end
 
     if fs.exists(installPath) then
+        print("Package already installed: " .. appName)
+        print("Removing existing package: " .. installPath)
         fs.delete(installPath)
     end
 
     createDirectory(installPath)
+    print("Created directory: " .. installPath)
     installDirectory(repo, path, installPath, files)
+    print("Package installed: " .. appName)
 
-    -- Create a shell alias for easier execution without .lua extension
     local mainFile = installPath .. "/" .. files[1]
     shell.setAlias(appName, mainFile)
     print("Alias created: " .. appName .. " -> " .. mainFile)
+    print("--------------------")
+end
+
+local function uninstallPackage(appName, packageInfo)
+    local installPath = packageInfo.installPath
+
+    print("--------------------")
+    print("Uninstalling package: " .. appName)
+
+    if not fs.exists(installPath) then
+        print("Package not installed: " .. appName)
+        return
+    end
+
+    print("Removing package: " .. installPath)
+    fs.delete(installPath)
+    print("Package uninstalled: " .. appName)
+
+    shell.clearAlias(appName)
+    print("Alias removed: " .. appName)
+    print("--------------------")
+end
+
+local function updatePackage(appName, packageInfo)
+    print("--------------------")
+    print("Updating package: " .. appName)
+
+    if not fs.exists(packageInfo.installPath) then
+        print("Package not installed: " .. appName)
+        print("Use 'pakpak install " .. appName .. "' to install it")
+        return
+    end
+
+    -- Uninstall the old version
+    uninstallPackage(appName, packageInfo)
+    -- Install the new version
+    installPackage(appName, packageInfo)
+    
+    print("Update completed for: " .. appName)
+    print("--------------------")
 end
 
 local args = {...}
-if #args < 2 or args[1] ~= "install" then
-    print("Usage: pakpak install [appname]")
+if #args < 2 then
+    print("PakPak - Package Manager")
+    print("Usage:")
+    print("  pakpak install <AppName>")
+    print("  pakpak uninstall <AppName>")
+    print("  pakpak update <AppName>")
     return
 end
 
+local command = args[1]
 local appName = args[2]
 local packageList = fetchPackageList()
+
 if not packageList then
     print("Failed to fetch package list")
     return
 end
-
--- Debug output to verify JSON parsing
-print(textutils.serialize(packageList))
 
 local packageInfo = packageList[appName]
 if not packageInfo then
@@ -108,10 +157,16 @@ if not packageInfo then
     return
 end
 
--- Check files explicitly
-if not packageInfo.files then
-    print("No files listed for package: " .. appName)
-    return
+if command == "install" then
+    if not packageInfo.files then
+        print("No files listed for package: " .. appName)
+        return
+    end
+    installPackage(appName, packageInfo)
+elseif command == "uninstall" then
+    uninstallPackage(appName, packageInfo)
+elseif command == "update" then
+    updatePackage(appName, packageInfo)
+else
+    print("Unknown command. Use 'install', 'uninstall', or 'update'")
 end
-
-installPackage(appName, packageInfo)
