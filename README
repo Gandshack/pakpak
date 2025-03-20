@@ -12,7 +12,9 @@ Centralized Package List: Easily access a curated list of packages managed centr
 
 Installation
 
-To install PakPak on your ComputerCraft computer, simply run the following command:
+To install PakPak on your ComputerCraft computer, simply run the following command: 
+
+pastebin get https://pastebin.com/tR10hAKd pakpak
 
 Alternatively, you can use the direct Computercraft pastebin installation command:
 
@@ -21,6 +23,8 @@ Now you have PakPak ready to go!
 Usage
 
 Install packages directly using the following command:
+
+pakpak install [PackageName]
 
 Replace [packageName] with the package you wish to install. Packages available are maintained and curated centrally.
 
