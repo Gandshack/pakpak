@@ -29,7 +29,7 @@ mv pakpak.lua /bin/pakpak
 3. **Download the startup script to the root directory:**
 
 ```lua
-wget https://raw.githubusercontent.com/Gandshack/pakpak/main/startup.lua startup.lua
+wget https://raw.githubusercontent.com/Gandshack/pakpak/master/startup.lua startup.lua
 ```
 
 This will configure your shell path to include `/bin`.
