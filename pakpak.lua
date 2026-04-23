@@ -1,5 +1,5 @@
 local function fetch_from_github(repo, path)
-    local url = "https://raw.githubusercontent.com/" .. repo .. "/main/" .. path
+    local url = "https://raw.githubusercontent.com/" .. repo .. "/master/" .. path
 
     local response = http.get(url)
     if response then
