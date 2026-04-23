@@ -3,7 +3,5 @@
   "description": "A computercraft package manager",
   "version": "0.0.1",
   "installPath": "/bin",
-  "files": [
-    "pakpak.lua"
-  ]
+  "files": ["pakpak.lua"]
 }
