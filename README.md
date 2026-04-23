@@ -17,7 +17,7 @@ Follow these steps to install pakpak on your ComputerCraft computer:
 1. **Download pakpak:**
 
 ```lua
-wget https://raw.githubusercontent.com/Gandshack/pakpak/main/pakpak.lua pakpak.lua
+wget https://raw.githubusercontent.com/Gandshack/pakpak/master/pakpak.lua pakpak.lua
 ```
 
 2. **Move it to the `/bin` directory:**
