@@ -1,4 +1,4 @@
-local CONFIG_PATH = "/etc/pakpak_config.json"
+local CONFIG_PATH = "/cfg/output.cfg"
 
 local function load_config()
     if fs.exists(CONFIG_PATH) then
@@ -19,7 +19,7 @@ end
 
 local function default_branch()
     local cfg = load_config()
-    return cfg.use_dev and "dev" or "main"
+    return cfg.use_dev and "dev" or "master"
 end
 
 local function fetch_from_github(repo, path, branch)
