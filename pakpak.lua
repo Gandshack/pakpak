@@ -37,10 +37,10 @@ local function fetch_from_github(repo, path, branch)
     end
 end
 
-local function fetch_package_list(branch)
+local function fetch_package_list()
     local repo = "Gandshack/pakpak_registry"
     local path = "list.json"
-    local content = fetch_from_github(repo, path, branch)
+    local content = fetch_from_github(repo, path, "master")
     if content then
         print("Package list fetched successfully.")
         return textutils.unserializeJSON(content)
@@ -58,7 +58,7 @@ local function to_raw_url(url)
 end
 
 local function install_package(name, branch)
-    local data = fetch_package_list(branch)
+    local data = fetch_package_list()
     if not data then return end
     
     local pkg = data.packages[name]
@@ -86,7 +86,7 @@ local function install_package(name, branch)
 end
 
 local function remove_package(name, branch)
-    local data = fetch_package_list(branch)
+    local data = fetch_package_list()
     if not data then return end
 
     local pkg = data.packages[name]
