@@ -1,5 +1,30 @@
-local function fetch_from_github(repo, path)
-    local url = "https://raw.githubusercontent.com/" .. repo .. "/master/" .. path
+local CONFIG_PATH = "/etc/pakpak_config.json"
+
+local function load_config()
+    if fs.exists(CONFIG_PATH) then
+        local f = fs.open(CONFIG_PATH, "r")
+        local content = f.readAll()
+        f.close()
+        local cfg = textutils.unserializeJSON(content)
+        if cfg then return cfg end
+    end
+    return { use_dev = false }
+end
+
+local function save_config(cfg)
+    local f = fs.open(CONFIG_PATH, "w")
+    f.write(textutils.serializeJSON(cfg))
+    f.close()
+end
+
+local function default_branch()
+    local cfg = load_config()
+    return cfg.use_dev and "dev" or "main"
+end
+
+local function fetch_from_github(repo, path, branch)
+    branch = branch or default_branch()
+    local url = "https://raw.githubusercontent.com/" .. repo .. "/" .. branch .. "/" .. path
 
     local response = http.get(url)
     if response then
@@ -12,10 +37,10 @@ local function fetch_from_github(repo, path)
     end
 end
 
-local function fetch_package_list()
+local function fetch_package_list(branch)
     local repo = "Gandshack/pakpak_registry"
     local path = "list.json"
-    local content = fetch_from_github(repo, path)
+    local content = fetch_from_github(repo, path, branch)
     if content then
         print("Package list fetched successfully.")
         return textutils.unserializeJSON(content)
@@ -32,8 +57,8 @@ local function to_raw_url(url)
     return url  -- returns "User/repo"
 end
 
-local function install_package(name)
-    local data = fetch_package_list()
+local function install_package(name, branch)
+    local data = fetch_package_list(branch)
     if not data then return end
     
     local pkg = data.packages[name]
@@ -43,13 +68,13 @@ local function install_package(name)
     end
 
     local repo = to_raw_url(pkg.url)
-    local manifest_content = fetch_from_github(repo, "pakpak.json")
+    local manifest_content = fetch_from_github(repo, "pakpak.json", branch)
     if not manifest_content then return end
     
     local manifest = textutils.unserializeJSON(manifest_content)
     
     for _, file in ipairs(manifest.files) do
-        local content = fetch_from_github(repo, file)
+        local content = fetch_from_github(repo, file, branch)
         local install_path = fs.combine(manifest.installPath, fs.getName(file))
         local f = fs.open(install_path, "w")
         f.write(content)
@@ -60,8 +85,8 @@ local function install_package(name)
     print("Done! Installed " .. name)
 end
 
-local function remove_package(name)
-    local data = fetch_package_list()
+local function remove_package(name, branch)
+    local data = fetch_package_list(branch)
     if not data then return end
 
     local pkg = data.packages[name]
@@ -71,7 +96,7 @@ local function remove_package(name)
     end
 
     local repo = to_raw_url(pkg.url)
-    local manifest_content = fetch_from_github(repo, "pakpak.json")
+    local manifest_content = fetch_from_github(repo, "pakpak.json", branch)
     if not manifest_content then return end
 
     local manifest = textutils.unserializeJSON(manifest_content)
@@ -87,9 +112,9 @@ local function remove_package(name)
     print("Done! Removed " .. name)
 end
 
-local function update_package(name)
-    remove_package(name)
-    install_package(name)
+local function update_package(name, branch)
+    remove_package(name, branch)
+    install_package(name, branch)
 end
 
 local function list_packages()
@@ -112,20 +137,21 @@ local function list_packages()
 end
 
 local function show_help()
-    print("Usage: pakpak <command> <package>")
+    print("Usage: pakpak <command> <package> [--dev]")
     print(" ")
     print("Commands:")
     print(" ")
-    print("install <package> - Install a package from the registry.")
+    print("install <package> [--dev] - Install a package (--dev uses dev branch).")
     print(" ")
-    print("update <package> - Update an installed package to the latest version.")
+    print("update <package> [--dev]  - Update an installed package.")
     print(" ")
-    print("remove <package> - Remove an installed package.")
+    print("remove <package>          - Remove an installed package.")
     print(" ")
-    print("list - List all available packages in the registry.")
+    print("list                      - List all available packages.")
     print(" ")
-    print("help - Show this help message.")
-    
+    print("set-dev <true|false>      - Globally toggle dev branch as default.")
+    print(" ")
+    print("help                      - Show this help message.")
 end
 
 local args = {...}
@@ -137,6 +163,20 @@ end
 local command = args[1]
 local package_name = args[2]
 
+-- Detect --dev flag in any position after the command
+local use_dev_flag = false
+local filtered_args = {}
+for i = 2, #args do
+    if args[i] == "--dev" then
+        use_dev_flag = true
+    else
+        table.insert(filtered_args, args[i])
+    end
+end
+package_name = filtered_args[1]
+
+local branch = use_dev_flag and "dev" or nil  -- nil lets default_branch() decide
+
 if command == "list" then
     list_packages()
 elseif command == "install" then
@@ -144,19 +184,29 @@ elseif command == "install" then
         print("Please specify a package to install.")
         return
     end
-    install_package(package_name)
+    install_package(package_name, branch)
 elseif command == "remove" then
     if not package_name then
         print("Please specify a package to remove.")
         return
     end
-    remove_package(package_name)
+    remove_package(package_name, branch)
 elseif command == "update" then
     if not package_name then
         print("Please specify a package to update.")
         return
     end
-    update_package(package_name)    
+    update_package(package_name, branch)
+elseif command == "set-dev" then
+    local value = filtered_args[1]
+    if value == "true" or value == "false" then
+        local cfg = load_config()
+        cfg.use_dev = (value == "true")
+        save_config(cfg)
+        print("Dev mode set to: " .. value)
+    else
+        print("Usage: pakpak set-dev <true|false>")
+    end
 elseif command == "help" then
     show_help()
 else
