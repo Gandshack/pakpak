@@ -19,12 +19,11 @@ end
 
 local function default_branch()
     local cfg = load_config()
-    return cfg.use_dev and "dev" or "main"
+    return cfg.use_dev and "dev" or "master"
 end
 
 local function fetch_from_github(repo, path, branch)
-    branch = branch or default_branch()
-    local url = "https://raw.githubusercontent.com/" .. repo .. "/" .. branch .. "/" .. path
+    branch = branch or default_branch()    local url = "https://raw.githubusercontent.com/" .. repo .. "/" .. branch .. "/" .. path
 
     local response = http.get(url)
     if response then
