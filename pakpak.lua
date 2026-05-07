@@ -152,6 +152,8 @@ local function show_help()
     print("set-dev <true|false>      - Globally toggle dev branch as default.")
     print(" ")
     print("help                      - Show this help message.")
+    print(" ")
+    print("[DEV] test                - Test dev branch functionality.")
 end
 
 local args = {...}
@@ -207,6 +209,8 @@ elseif command == "set-dev" then
     else
         print("Usage: pakpak set-dev <true|false>")
     end
+elseif command == "test" then
+    print("[DEV] pakpak dev branch is working!")
 elseif command == "help" then
     show_help()
 else
