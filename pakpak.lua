@@ -1,4 +1,4 @@
-local CONFIG_PATH = "/etc/pakpak_config.json"
+local CONFIG_PATH = "/cfg/output.cfg"
 
 local function load_config()
     if fs.exists(CONFIG_PATH) then
