@@ -1,4 +1,4 @@
-local CONFIG_PATH = "/cfg/output.cfg"
+local CONFIG_PATH = "/etc/pakpak_config.json"
 
 local function load_config()
     if fs.exists(CONFIG_PATH) then
@@ -23,7 +23,8 @@ local function default_branch()
 end
 
 local function fetch_from_github(repo, path, branch)
-    branch = branch or default_branch()    local url = "https://raw.githubusercontent.com/" .. repo .. "/" .. branch .. "/" .. path
+    branch = branch or default_branch()
+    local url = "https://raw.githubusercontent.com/" .. repo .. "/" .. branch .. "/" .. path
 
     local response = http.get(url)
     if response then
@@ -36,10 +37,10 @@ local function fetch_from_github(repo, path, branch)
     end
 end
 
-local function fetch_package_list(branch)
+local function fetch_package_list()
     local repo = "Gandshack/pakpak_registry"
     local path = "list.json"
-    local content = fetch_from_github(repo, path, branch)
+    local content = fetch_from_github(repo, path, "master")
     if content then
         print("Package list fetched successfully.")
         return textutils.unserializeJSON(content)
@@ -57,7 +58,7 @@ local function to_raw_url(url)
 end
 
 local function install_package(name, branch)
-    local data = fetch_package_list(branch)
+    local data = fetch_package_list()
     if not data then return end
     
     local pkg = data.packages[name]
@@ -85,7 +86,7 @@ local function install_package(name, branch)
 end
 
 local function remove_package(name, branch)
-    local data = fetch_package_list(branch)
+    local data = fetch_package_list()
     if not data then return end
 
     local pkg = data.packages[name]
@@ -151,8 +152,6 @@ local function show_help()
     print("set-dev <true|false>      - Globally toggle dev branch as default.")
     print(" ")
     print("help                      - Show this help message.")
-    print(" ")
-    print("[DEV] test                - Test dev branch functionality.")
 end
 
 local args = {...}
@@ -208,8 +207,6 @@ elseif command == "set-dev" then
     else
         print("Usage: pakpak set-dev <true|false>")
     end
-elseif command == "test" then
-    print("[DEV] pakpak dev branch is working!")
 elseif command == "help" then
     show_help()
 else
