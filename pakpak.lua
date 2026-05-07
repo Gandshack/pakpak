@@ -37,10 +37,10 @@ local function fetch_from_github(repo, path, branch)
     end
 end
 
-local function fetch_package_list(branch)
+local function fetch_package_list()
     local repo = "Gandshack/pakpak_registry"
     local path = "list.json"
-    local content = fetch_from_github(repo, path, branch)
+    local content = fetch_from_github(repo, path, "master")
     if content then
         print("Package list fetched successfully.")
         return textutils.unserializeJSON(content)
@@ -54,13 +54,13 @@ local function to_raw_url(url)
     -- strip https://github.com/ and .git
     url = url:gsub("https://github.com/", "")
     url = url:gsub("%.git$", "")
-    return url  -- returns "User/repo"
+    return url -- returns "User/repo"
 end
 
 local function install_package(name, branch)
-    local data = fetch_package_list(branch)
+    local data = fetch_package_list()
     if not data then return end
-    
+
     local pkg = data.packages[name]
     if not pkg then
         print("Package not found: " .. name)
@@ -70,9 +70,9 @@ local function install_package(name, branch)
     local repo = to_raw_url(pkg.url)
     local manifest_content = fetch_from_github(repo, "pakpak.json", branch)
     if not manifest_content then return end
-    
+
     local manifest = textutils.unserializeJSON(manifest_content)
-    
+
     for _, file in ipairs(manifest.files) do
         local content = fetch_from_github(repo, file, branch)
         local install_path = fs.combine(manifest.installPath, fs.getName(file))
@@ -86,7 +86,7 @@ local function install_package(name, branch)
 end
 
 local function remove_package(name, branch)
-    local data = fetch_package_list(branch)
+    local data = fetch_package_list()
     if not data then return end
 
     local pkg = data.packages[name]
@@ -154,7 +154,7 @@ local function show_help()
     print("help                      - Show this help message.")
 end
 
-local args = {...}
+local args = { ... }
 if #args < 1 then
     show_help()
     return
@@ -175,7 +175,7 @@ for i = 2, #args do
 end
 package_name = filtered_args[1]
 
-local branch = use_dev_flag and "dev" or nil  -- nil lets default_branch() decide
+local branch = use_dev_flag and "dev" or nil -- nil lets default_branch() decide
 
 if command == "list" then
     list_packages()
