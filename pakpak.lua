@@ -74,6 +74,9 @@ local function install_package(name, branch)
 
     local manifest = textutils.unserializeJSON(manifest_content)
 
+    local version_str = manifest.version and (" v" .. manifest.version) or ""
+    print("Installing " .. name .. version_str .. "...")
+
     for _, file in ipairs(manifest.files) do
         local content = fetch_from_github(repo, file, branch)
         local install_path = fs.combine(manifest.installPath, fs.getName(file))
