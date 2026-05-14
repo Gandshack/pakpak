@@ -1,7 +1,7 @@
 {
   "name": "pakpak",
   "description": "A computercraft package manager",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "installPath": "/bin",
   "files": ["pakpak.lua"]
 }

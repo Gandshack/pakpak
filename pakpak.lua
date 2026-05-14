@@ -25,6 +25,7 @@ end
 local function fetch_from_github(repo, path, branch)
     branch = branch or default_branch()
     local url = "https://raw.githubusercontent.com/" .. repo .. "/" .. branch .. "/" .. path
+    print("[DEBUG] Fetching: " .. url)
 
     local response = http.get(url)
     if response then
@@ -81,6 +82,11 @@ local function install_package(name, branch)
         f.close()
         print("Installed " .. file .. " to " .. install_path)
     end
+
+    local meta_path = fs.combine(manifest.installPath, "pakpak.json")
+    local f = fs.open(meta_path, "w")
+    f.write(manifest_content)
+    f.close()
 
     print("Done! Installed " .. name)
 end
